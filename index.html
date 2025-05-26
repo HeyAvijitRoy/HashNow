@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HashNow – Hash Generator & Verifier</title>
-  <!-- <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet"> -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -18,57 +17,68 @@
       },
     };
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/spark-md5@3.0.2/spark-md5.min.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
 
-  <header class="text-center py-6">
-    <h1 class="text-3xl font-bold text-blue-700">🔐 HashNow</h1>
-    <p class="text-gray-600 mt-1">Generate & verify file or text hashes — all in your browser.</p>
+  <!-- Header -->
+  <header class="text-center py-8 space-y-2">
+    <div class="mx-auto h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center text-2xl text-primary font-bold">
+      🔐
+    </div>
+    <h1 class="text-3xl font-bold text-blue-700">HashNow</h1>
+    <p class="text-gray-600">Generate & verify file or text hashes — all in your browser.</p>
   </header>
 
-  <main class="flex flex-col md:flex-row gap-8 px-4 max-w-6xl mx-auto">
-    
-    <!-- Left Panel: Input -->
-    <section class="flex-1 space-y-4">
-      <textarea id="textInput" placeholder="Type or paste text here…" class="w-full h-36 p-4 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+  <!-- Main content -->
+  <main class="px-4 max-w-6xl mx-auto space-y-10">
+    <div class="flex flex-col md:flex-row gap-8">
 
-      <div id="fileDropZone" class="w-full p-6 text-center border-2 border-dashed border-blue-300 bg-blue-50 rounded-lg cursor-pointer hover:bg-blue-100 transition">
-        📂 Drag & drop a file here or click to browse
-      </div>
-      <input type="file" id="fileInput" class="hidden" />
-      <div id="fileName" class="text-sm text-gray-500 italic"></div>
+      <!-- Left Panel: Input Area -->
+      <section class="flex-1 space-y-4">
+        <div class="bg-white p-6 rounded-xl shadow space-y-4">
+          <textarea id="textInput" placeholder="Type or paste text here…" class="w-full h-36 p-4 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
 
-      <div class="flex flex-wrap items-center gap-3 mt-2">
-        <label for="algorithm" class="font-medium">Algorithm:</label>
-        <select id="algorithm" class="p-2 border rounded-md">
-          <option value="SHA-256">SHA-256</option>
-          <option value="SHA-1">SHA-1</option>
-          <option value="MD5">MD5</option>
-        </select>
-      </div>
-    </section>
+          <div id="fileDropZone" class="w-full p-6 text-center border-2 border-dashed border-blue-300 bg-blue-50 rounded-lg cursor-pointer hover:bg-blue-100 transition">
+            📂 Drag & drop a file here or click to browse
+          </div>
+          <input type="file" id="fileInput" class="hidden" />
 
-    <!-- Right Panel: Output -->
-    <section class="flex-1 space-y-4">
-      <div>
-        <h2 id="outputLabel" class="text-lg font-semibold">🔒 Hash Output</h2>
-        <div id="hashOutput" class="mt-2 p-4 bg-white border rounded-md font-mono text-sm break-all">—</div>
-        <button id="copyButton" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">📋 Copy Hash</button>
-      </div>
+          <div id="fileName" class="hidden w-full p-3 rounded-md bg-gray-100 border border-gray-300 text-sm font-medium text-gray-600 break-all"></div>
+        </div>
+      </section>
 
-      <div>
-        <h2 class="text-lg font-semibold">🔍 Compare a Hash</h2>
-        <input id="compareInput" class="w-full mt-2 p-3 border rounded-md font-mono text-sm" placeholder="Paste a hash to compare…" />
-        <div id="compareResult" class="mt-2 text-base font-medium">—</div>
-      </div>
-    </section>
+      <!-- Right Panel: Hash Output -->
+      <section class="flex-1 space-y-4">
+        <div class="bg-white p-6 rounded-xl shadow space-y-4">
+          <div class="flex justify-between items-center">
+            <h2 id="outputLabel" class="text-lg font-semibold">🔒 Hash Output</h2>
+            <select id="algorithm" class="p-2 border rounded-md text-sm">
+              <option value="SHA-256">SHA-256</option>
+              <option value="SHA-1">SHA-1</option>
+              <option value="MD5">MD5</option>
+            </select>
+          </div>
+          <div id="hashOutput" class="p-4 bg-gray-50 border rounded-md font-mono text-sm break-all">—</div>
+          <button id="copyButton" class="w-full md:w-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">📋 Copy Hash</button>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow space-y-4">
+          <h2 class="text-lg font-semibold">🔍 Compare a Hash</h2>
+          <input id="compareInput" class="w-full p-3 border rounded-md font-mono text-sm" placeholder="Paste a hash to compare…" />
+          <div id="compareResult" class="text-base font-medium">—</div>
+        </div>
+      </section>
+    </div>
   </main>
 
-  <footer class="text-center mt-8 text-sm text-gray-500">
+  <!-- Footer -->
+  <footer class="text-center mt-10 text-sm text-gray-500 space-y-1 pb-8">
     <p>🛡️ Client-side only. No files are uploaded.</p>
     <p>Crafted in idle time 🌀</p>
   </footer>
 
+  <!-- Toast -->
   <div id="toast" class="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-2 rounded-md shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none">Copied to clipboard!</div>
 
   <script src="script.js"></script>

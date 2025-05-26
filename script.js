@@ -21,11 +21,20 @@ function bufferToHex(buffer) {
 }
 
 async function computeHash(data, algorithm) {
+  if (algorithm === "MD5") {
+    if (typeof data === 'string') {
+      return SparkMD5.hash(data);
+    } else {
+      return SparkMD5.ArrayBuffer.hash(data);
+    }
+  }
+
   const encoder = new TextEncoder();
   const encoded = typeof data === 'string' ? encoder.encode(data) : data;
   const hashBuffer = await crypto.subtle.digest(algorithm, encoded);
   return bufferToHex(hashBuffer);
 }
+
 
 function showToast(message) {
   toast.textContent = message;
@@ -59,11 +68,15 @@ async function updateHash() {
 
 function compareHash() {
   const input = compareInput.value.trim().toLowerCase();
-  const output = currentHash.toLowerCase();
-  if (!input) {
+  const output = currentHash?.trim().toLowerCase();
+
+  if (!output || !input) {
     compareResult.textContent = "—";
     compareResult.style.color = "";
-  } else if (input === output) {
+    return;
+  }
+
+  if (input === output) {
     compareResult.textContent = "✅ Hashes Match!";
     compareResult.style.color = "green";
     showToast("✅ Hashes match!");
@@ -72,6 +85,7 @@ function compareHash() {
     compareResult.style.color = "red";
   }
 }
+
 
 // Events
 algorithmSelect.addEventListener('change', updateHash);
