@@ -1,59 +1,75 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="HashNow – Client-side Hash Generator & Verifier" />
-  <meta property="og:title" content="HashNow" />
-  <meta property="og:description" content="Verify file or text hashes using SHA-256, SHA-1, or MD5." />
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="HashNow" />
-  <meta name="twitter:description" content="Client-side Hash Generator and Verifier" />
-  <link rel="stylesheet" href="style.css" />
   <title>HashNow – Hash Generator & Verifier</title>
+  <!-- <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet"> -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2563eb',
+            secondary: '#f8fafc',
+          },
+        },
+      },
+    };
+  </script>
 </head>
-<body>
-  <header>
-    <img src="assets/logo.svg" alt="HashNow Logo" />
-    <h1>HashNow</h1>
-    <p>Generate & Verify Hashes – All in your browser.</p>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+  <header class="text-center py-6">
+    <h1 class="text-3xl font-bold text-blue-700">🔐 HashNow</h1>
+    <p class="text-gray-600 mt-1">Generate & verify file or text hashes — all in your browser.</p>
   </header>
 
-  <main>
-    <section class="input-area">
-      <textarea id="textInput" placeholder="Type or paste text here…"></textarea>
-      <div class="file-drop" id="fileDropZone">📂 Drag & drop a file here or click to browse</div>
-      <input type="file" id="fileInput" hidden />
+  <main class="flex flex-col md:flex-row gap-8 px-4 max-w-6xl mx-auto">
+    
+    <!-- Left Panel: Input -->
+    <section class="flex-1 space-y-4">
+      <textarea id="textInput" placeholder="Type or paste text here…" class="w-full h-36 p-4 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+
+      <div id="fileDropZone" class="w-full p-6 text-center border-2 border-dashed border-blue-300 bg-blue-50 rounded-lg cursor-pointer hover:bg-blue-100 transition">
+        📂 Drag & drop a file here or click to browse
+      </div>
+      <input type="file" id="fileInput" class="hidden" />
+      <div id="fileName" class="text-sm text-gray-500 italic"></div>
+
+      <div class="flex flex-wrap items-center gap-3 mt-2">
+        <label for="algorithm" class="font-medium">Algorithm:</label>
+        <select id="algorithm" class="p-2 border rounded-md">
+          <option value="SHA-256">SHA-256</option>
+          <option value="SHA-1">SHA-1</option>
+          <option value="MD5">MD5</option>
+        </select>
+      </div>
     </section>
 
-    <section class="controls">
-      <label for="algorithm">Algorithm:</label>
-      <select id="algorithm">
-        <option value="SHA-256">SHA-256</option>
-        <option value="SHA-1">SHA-1</option>
-        <option value="MD5">MD5</option>
-      </select>
-      <button id="hashButton">Generate Hash</button>
-    </section>
+    <!-- Right Panel: Output -->
+    <section class="flex-1 space-y-4">
+      <div>
+        <h2 id="outputLabel" class="text-lg font-semibold">🔒 Hash Output</h2>
+        <div id="hashOutput" class="mt-2 p-4 bg-white border rounded-md font-mono text-sm break-all">—</div>
+        <button id="copyButton" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">📋 Copy Hash</button>
+      </div>
 
-    <section class="results">
-      <h3>🔒 Hash Output</h3>
-      <div id="hashOutput" class="output-box">—</div>
-      <button id="copyButton">📋 Copy Hash</button>
-    </section>
-
-    <section class="compare">
-      <h3>🔍 Compare a Hash</h3>
-      <input id="compareInput" placeholder="Paste another hash to compare…" />
-      <div id="compareResult">—</div>
+      <div>
+        <h2 class="text-lg font-semibold">🔍 Compare a Hash</h2>
+        <input id="compareInput" class="w-full mt-2 p-3 border rounded-md font-mono text-sm" placeholder="Paste a hash to compare…" />
+        <div id="compareResult" class="mt-2 text-base font-medium">—</div>
+      </div>
     </section>
   </main>
 
-  <footer>
-    <p>🛡️ All processing is done locally. Your data never leaves the browser.</p>
-    <p>Made during idle time 🌀</p>
+  <footer class="text-center mt-8 text-sm text-gray-500">
+    <p>🛡️ Client-side only. No files are uploaded.</p>
+    <p>Crafted in idle time 🌀</p>
   </footer>
+
+  <div id="toast" class="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-2 rounded-md shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none">Copied to clipboard!</div>
 
   <script src="script.js"></script>
 </body>

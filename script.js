@@ -1,16 +1,18 @@
-// script.js
-
 const textInput = document.getElementById('textInput');
 const fileInput = document.getElementById('fileInput');
 const fileDropZone = document.getElementById('fileDropZone');
+const fileNameDisplay = document.getElementById('fileName');
 const algorithmSelect = document.getElementById('algorithm');
-const hashButton = document.getElementById('hashButton');
+const hashButton = document.getElementById('hashButton'); // Not used anymore
 const hashOutput = document.getElementById('hashOutput');
+const outputLabel = document.getElementById('outputLabel');
 const copyButton = document.getElementById('copyButton');
 const compareInput = document.getElementById('compareInput');
 const compareResult = document.getElementById('compareResult');
+const toast = document.getElementById('toast');
 
 let currentHash = '';
+let currentFile = null;
 
 function bufferToHex(buffer) {
   return [...new Uint8Array(buffer)]
@@ -25,24 +27,34 @@ async function computeHash(data, algorithm) {
   return bufferToHex(hashBuffer);
 }
 
-async function handleHashInput() {
-  const algorithm = algorithmSelect.value;
-  if (textInput.value.trim()) {
-    currentHash = await computeHash(textInput.value, algorithm);
-    showHash(currentHash);
-  } else if (fileInput.files.length) {
-    const file = fileInput.files[0];
-    const arrayBuffer = await file.arrayBuffer();
-    currentHash = await computeHash(arrayBuffer, algorithm);
-    showHash(currentHash);
-  } else {
-    alert("Please enter text or upload a file.");
-  }
+function showToast(message) {
+  toast.textContent = message;
+  toast.classList.remove("opacity-0");
+  toast.classList.add("opacity-100");
+  setTimeout(() => toast.classList.add("opacity-0"), 2000);
 }
 
 function showHash(hash) {
+  currentHash = hash;
+  const algoName = algorithmSelect.value;
+  outputLabel.textContent = `🔒 Hash Output (${algoName})`;
   hashOutput.textContent = hash;
   compareHash();
+}
+
+async function updateHash() {
+  const algorithm = algorithmSelect.value;
+  if (textInput.value.trim()) {
+    const hash = await computeHash(textInput.value, algorithm);
+    showHash(hash);
+  } else if (currentFile) {
+    const buffer = await currentFile.arrayBuffer();
+    const hash = await computeHash(buffer, algorithm);
+    showHash(hash);
+  } else {
+    hashOutput.textContent = "—";
+    currentHash = '';
+  }
 }
 
 function compareHash() {
@@ -54,41 +66,58 @@ function compareHash() {
   } else if (input === output) {
     compareResult.textContent = "✅ Hashes Match!";
     compareResult.style.color = "green";
+    showToast("✅ Hashes match!");
   } else {
     compareResult.textContent = "❌ Hashes Do Not Match";
     compareResult.style.color = "red";
   }
 }
 
+// Events
+algorithmSelect.addEventListener('change', updateHash);
+textInput.addEventListener('input', () => {
+  currentFile = null;
+  fileNameDisplay.textContent = "";
+  updateHash();
+});
+compareInput.addEventListener('input', compareHash);
+
 copyButton.addEventListener('click', () => {
   if (currentHash) {
     navigator.clipboard.writeText(currentHash);
-    copyButton.textContent = "✅ Copied!";
-    setTimeout(() => copyButton.textContent = "📋 Copy Hash", 1500);
+    showToast("📋 Hash copied to clipboard!");
   }
 });
 
-hashButton.addEventListener('click', handleHashInput);
-compareInput.addEventListener('input', compareHash);
-
-// Drag & drop support
+// Drag & Drop
 fileDropZone.addEventListener('click', () => fileInput.click());
 
 fileDropZone.addEventListener('dragover', (e) => {
   e.preventDefault();
-  fileDropZone.classList.add('dragover');
+  fileDropZone.classList.add('bg-blue-100');
 });
 
 fileDropZone.addEventListener('dragleave', () => {
-  fileDropZone.classList.remove('dragover');
+  fileDropZone.classList.remove('bg-blue-100');
 });
 
 fileDropZone.addEventListener('drop', (e) => {
   e.preventDefault();
-  fileDropZone.classList.remove('dragover');
+  fileDropZone.classList.remove('bg-blue-100');
   const files = e.dataTransfer.files;
   if (files.length > 0) {
-    fileInput.files = files;
-    handleHashInput();
+    currentFile = files[0];
+    fileNameDisplay.textContent = `📄 File: ${currentFile.name}`;
+    textInput.value = "";
+    updateHash();
+  }
+});
+
+fileInput.addEventListener('change', () => {
+  if (fileInput.files.length > 0) {
+    currentFile = fileInput.files[0];
+    fileNameDisplay.textContent = `📄 File: ${currentFile.name}`;
+    textInput.value = "";
+    updateHash();
   }
 });
