@@ -43,7 +43,7 @@ open index.html
 
 ### 📄 License
 
-[Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
+[License: MIT](https://opensource.org/licenses/MIT)
 
 ---
 
