@@ -53,18 +53,41 @@ function showHash(hash) {
 
 async function updateHash() {
   const algorithm = algorithmSelect.value;
-  if (textInput.value.trim()) {
-    const hash = await computeHash(textInput.value, algorithm);
+
+  const text = textInput.value.trim();
+  const file = fileInput.files[0] || currentFile;
+
+  // If nothing to hash, clear everything
+  if (!text && !file) {
+    currentHash = '';
+    hashOutput.textContent = "—";
+    compareResult.textContent = "—";
+    compareResult.style.color = "";
+    fileNameDisplay.classList.add("hidden");
+    outputLabel.textContent = `🔒 Hash Output (${algorithm})`;
+    return;
+  }
+
+  // If text input is present, prioritize it over file
+  if (text) {
+    currentFile = null;
+    fileNameDisplay.classList.add("hidden");
+    const hash = await computeHash(text, algorithm);
     showHash(hash);
-  } else if (currentFile) {
-    const buffer = await currentFile.arrayBuffer();
+    return;
+  }
+
+  // Otherwise, process file
+  if (file) {
+    currentFile = file;
+    fileNameDisplay.textContent = `📄 ${file.name}`;
+    fileNameDisplay.classList.remove("hidden");
+    const buffer = await file.arrayBuffer();
     const hash = await computeHash(buffer, algorithm);
     showHash(hash);
-  } else {
-    hashOutput.textContent = "—";
-    currentHash = '';
   }
 }
+
 
 function compareHash() {
   const input = compareInput.value.trim().toLowerCase();
