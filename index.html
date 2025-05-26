@@ -1,0 +1,60 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="HashNow – Client-side Hash Generator & Verifier" />
+  <meta property="og:title" content="HashNow" />
+  <meta property="og:description" content="Verify file or text hashes using SHA-256, SHA-1, or MD5." />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="HashNow" />
+  <meta name="twitter:description" content="Client-side Hash Generator and Verifier" />
+  <link rel="stylesheet" href="style.css" />
+  <title>HashNow – Hash Generator & Verifier</title>
+</head>
+<body>
+  <header>
+    <img src="assets/logo.svg" alt="HashNow Logo" />
+    <h1>HashNow</h1>
+    <p>Generate & Verify Hashes – All in your browser.</p>
+  </header>
+
+  <main>
+    <section class="input-area">
+      <textarea id="textInput" placeholder="Type or paste text here…"></textarea>
+      <div class="file-drop" id="fileDropZone">📂 Drag & drop a file here or click to browse</div>
+      <input type="file" id="fileInput" hidden />
+    </section>
+
+    <section class="controls">
+      <label for="algorithm">Algorithm:</label>
+      <select id="algorithm">
+        <option value="SHA-256">SHA-256</option>
+        <option value="SHA-1">SHA-1</option>
+        <option value="MD5">MD5</option>
+      </select>
+      <button id="hashButton">Generate Hash</button>
+    </section>
+
+    <section class="results">
+      <h3>🔒 Hash Output</h3>
+      <div id="hashOutput" class="output-box">—</div>
+      <button id="copyButton">📋 Copy Hash</button>
+    </section>
+
+    <section class="compare">
+      <h3>🔍 Compare a Hash</h3>
+      <input id="compareInput" placeholder="Paste another hash to compare…" />
+      <div id="compareResult">—</div>
+    </section>
+  </main>
+
+  <footer>
+    <p>🛡️ All processing is done locally. Your data never leaves the browser.</p>
+    <p>Made during idle time 🌀</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
