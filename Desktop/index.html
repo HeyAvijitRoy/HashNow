@@ -59,7 +59,7 @@
       <!-- Right Panel -->
       <div class="col-md-6">
         <div class="card shadow-sm mb-4">
-          <div class="card-body">
+          <div class="card-body position-relative">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <h5 id="outputLabel" class="mb-0">🔒 Hash Output</h5>
               <select id="algorithm" class="form-select form-select-sm w-auto">
@@ -69,6 +69,13 @@
               </select>
             </div>
             <div id="hashOutput" class="form-control font-monospace bg-light border mb-2 text-break small">—</div>
+            <small id="elapsedTime" class="text-muted">Time Elapsed: —</small>
+            <div id="processingOverlay" class="position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-75 flex-column justify-content-center align-items-center text-center fw-bold fs-5 text-dark" style="display: none; z-index: 100;">
+              <div class="spinner-border text-primary mb-3" role="status"></div>
+              <div>Processing...</div>
+              <small id="liveTimer" class="text-muted mt-2">Elapsed: 0.0s</small>
+            </div>
+
             <button id="copyButton" class="btn btn-primary w-100">📋 Copy Hash</button>
           </div>
         </div>
@@ -86,7 +93,7 @@
 
   <!-- Footer -->
   <footer class="text-center text-muted small py-4">
-    <p class="mb-0">No internet needed. Files and data never leave your system.</p>
+    <p class="mb-0">No internet needed. Files and data never leave your browser.</p>
     <p class="mb-0">
       &copy; <span id="year"></span>, Built with <span class="text-danger">♥</span> in NYC by 
       <a href="https://avijitroy.com" target="_blank" class="text-decoration-none text-primary">Avijit Roy</a>. 
