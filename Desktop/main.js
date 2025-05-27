@@ -4,8 +4,8 @@ const packageJson = require('./package.json');
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 1000,
-    height: 800,
+    width: 1200,
+    height: 900,
     icon: path.join(__dirname, 'icons', 'hashnow-64.png'),
     webPreferences: {
       contextIsolation: true
