@@ -12,8 +12,9 @@ HashNow is a fast, clean, and privacy-respecting tool for generating and compari
 - Auto-update on algorithm change
 - One-click Copy to Clipboard
 - Real-time Hash Comparison
-- **100% Client-Side** — Nothing is uploaded, ever.
-- Mobile-friendly. Built with [Tailwind CSS](https://tailwindcss.com/)
+- **100% Client-Side** — Nothing is uploaded, ever
+- **Fully Offline** — No internet or CDN needed
+- Mobile-friendly. Built with [Bootstrap 5](https://getbootstrap.com/)
 
 
 ### Use Cases
@@ -29,12 +30,12 @@ HashNow is a fast, clean, and privacy-respecting tool for generating and compari
 - Vanilla JavaScript
 - Web Crypto API (SHA-256, SHA-1)
 - [SparkMD5](https://github.com/satazor/js-spark-md5) (fallback for MD5)
-- Tailwind CSS
+- Bootstrap 5 (local CSS & JS, no CDN)
 
 
 ### Local Development
 
-Just clone and open `index.html` — that’s it.
+Just clone and open `index.html` — that’s it. All dependencies are local.
 
 ```bash
 git clone https://github.com/yourusername/HashNow.git
