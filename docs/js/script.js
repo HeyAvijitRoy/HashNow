@@ -51,13 +51,18 @@ function showHash(hash) {
   compareHash();
 }
 
+// Update Hash
 async function updateHash() {
   const algorithm = algorithmSelect.value;
-
   const text = textInput.value.trim();
   const file = fileInput.files[0] || currentFile;
+  const elapsedEl = document.getElementById('elapsedTime');
+  const overlay = document.getElementById('processingOverlay');
+  const liveTimer = document.getElementById('liveTimer');
 
-  // If nothing to hash, clear everything
+  overlay.style.display = 'none'; 
+
+  // If nothing to hash
   if (!text && !file) {
     currentHash = '';
     hashOutput.textContent = "—";
@@ -65,30 +70,60 @@ async function updateHash() {
     compareResult.style.color = "";
     fileNameDisplay.classList.add("d-none");
     outputLabel.textContent = `🔒 Hash Output (${algorithm})`;
+    elapsedEl.textContent = `Time Elapsed: —`;
     return;
   }
 
-  // If text input is present, prioritize it over file
-  if (text) {
-    currentFile = null;
-    fileNameDisplay.classList.add("d-none");
-    const hash = await computeHash(text, algorithm);
-    showHash(hash);
-    return;
+  let timerInterval;
+  const start = performance.now();
+  liveTimer.textContent = "Elapsed: 0.0s";
+  elapsedEl.textContent = "Time Elapsed: —";
+
+  // show overlay only if it's a large file
+  if (file && file.size > 5 * 1024 * 1024) {
+    overlay.style.display = 'flex';
+  } else {
+    overlay.style.display = 'none';
   }
 
-  // Otherwise, process file
-  if (file) {
-    currentFile = file;
-    fileNameText.textContent = `📄 File: ${file.name}`;
-    fileNameDisplay.classList.remove("d-none");
-    const buffer = await file.arrayBuffer();
-    const hash = await computeHash(buffer, algorithm);
-    showHash(hash);
+  timerInterval = setInterval(() => {
+    const elapsed = (performance.now() - start) / 1000;
+    liveTimer.textContent = `Elapsed: ${elapsed.toFixed(1)}s`;
+  }, 100);
+
+  try {
+    if (text) {
+      currentFile = null;
+      fileNameDisplay.classList.add("d-none");
+      const hash = await computeHash(text, algorithm);
+      hideOverlay();
+      showHash(hash);
+      const end = performance.now();
+      elapsedEl.textContent = `Time Elapsed: ${Math.round(end - start)} ms`;
+      return;
+    }
+
+    if (file) {
+      currentFile = file;
+      fileNameText.textContent = `📄 File: ${file.name}`;
+      fileNameDisplay.classList.remove("d-none");
+      const buffer = await file.arrayBuffer();
+      const hash = await computeHash(buffer, algorithm);
+      clearInterval(timerInterval);
+      overlay.style.display = 'none';
+      showHash(hash);
+      const end = performance.now();
+      elapsedEl.textContent = `Time Elapsed: ${Math.round(end - start)} ms`;
+    }
+  } catch (err) {
+    clearInterval(timerInterval);
+    overlay.style.display = 'none';
+    elapsedEl.textContent = `Time Elapsed: —`;
+    console.error("Hash computation failed:", err);
   }
 }
 
-
+// Hash Comparison
 function compareHash() {
   const input = compareInput.value.trim().toLowerCase();
   const output = currentHash?.trim().toLowerCase();
@@ -161,6 +196,7 @@ fileInput.addEventListener('change', () => {
   }
 });
 
+// Attachment Clear Button
 document.getElementById('clearFileBtn').addEventListener('click', () => {
   currentFile = null;
   fileInput.value = '';
@@ -168,6 +204,7 @@ document.getElementById('clearFileBtn').addEventListener('click', () => {
   updateHash();
 });
 
+// Reset Button
 document.getElementById('resetBtn').addEventListener('click', () => {
   textInput.value = '';
   fileInput.value = '';
@@ -178,5 +215,36 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   hashOutput.textContent = '—';
   compareResult.textContent = '—';
   compareResult.style.color = '';
+  elapsedTime.textContent = 'Time Elapsed: —';
   outputLabel.textContent = `🔒 Hash Output (${algorithmSelect.value})`;
 });
+
+// Elapsed Time Calculation
+let timerInterval;
+
+function startTimer() {
+  const start = performance.now();
+  const timerEl = document.getElementById("liveTimer");
+
+  timerInterval = setInterval(() => {
+    const elapsed = (performance.now() - start) / 1000;
+    timerEl.textContent = `Elapsed: ${elapsed.toFixed(1)}s`;
+  }, 100);
+  return start;
+}
+
+function stopTimer(startTime) {
+  clearInterval(timerInterval);
+  const elapsed = performance.now() - startTime;
+  document.getElementById("elapsedTime").textContent = `Time Elapsed: ${Math.round(elapsed)} ms`;
+  return elapsed;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("processingOverlay").style.display = "none";
+});
+
+function hideOverlay() {
+  overlay.style.display = 'none';
+  clearInterval(timerInterval);
+}
