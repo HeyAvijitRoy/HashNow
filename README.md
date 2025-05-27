@@ -18,7 +18,7 @@ HashNow is a fast, clean, and privacy-respecting tool for generating and compari
 - Real-time Hash Comparison
 - **100% Client-Side** — Nothing is uploaded, ever
 - **Fully Offline** — No internet or CDN needed
-- Mobile-friendly (WebApp) & cross-platform (Desktop)
+- Mobile-friendly (WebApp [docs]) & cross-platform (Desktop)
 
 ---
 
@@ -61,7 +61,7 @@ npm run dist  # produces both portable and installer executables under dist/
 
 ```bash
 git clone https://github.com/arkabyo/HashNow.git
-cd HashNow/WebApp
+cd HashNow/docs
 open index.html
 ```
 
