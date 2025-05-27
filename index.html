@@ -4,83 +4,92 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HashNow – Hash Generator & Verifier</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: '#2563eb',
-            secondary: '#f8fafc',
-          },
-        },
-      },
-    };
-  </script>
-  <script src="scripts/spark-md5.min.js"></script>
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/hashnow-32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/hashnow-180.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/hashnow-512.png" />
+  <link rel="manifest" href="icons/site.webmanifest" />
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- SparkMD5 -->
+  <script src="js/spark-md5.min.js"></script>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans">
+<body class="bg-light text-dark">
 
   <!-- Header -->
-  <header class="text-center py-8 space-y-2">
-    <div class="mx-auto h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center text-2xl text-primary font-bold">
-      🔐
+  <header class="text-center py-4">
+    <div class="mx-auto mb-2" style="width: 64px; height: 64px;">
+      <img src="icons/hashnow-64.png" alt="HashNow Logo" class="img-fluid" />
     </div>
-    <h1 class="text-3xl font-bold text-blue-700">HashNow</h1>
-    <p class="text-gray-600">
-      Generate & verify file or text hashes — 
-      <span class="font-medium text-gray-700">100% client-side</span>. No uploads. No tracking.
+    <h1 class="h3 text-primary fw-bold">HashNow</h1>
+    <p class="text-muted mb-0">
+      Generate & verify file or text hashes instantly.<br>
+      <strong>100% client-side</strong>. No uploads. No tracking.
     </p>
   </header>
 
-  <!-- Main content -->
-  <main class="px-4 max-w-6xl mx-auto space-y-10">
-    <div class="flex flex-col md:flex-row gap-8">
-
+  <!-- Main -->
+  <main class="container my-3">
+    <div class="row g-4">
       <!-- Left Panel -->
-      <section class="flex-1 space-y-4">
-        <div class="bg-white p-6 rounded-xl shadow space-y-4">
-          <textarea id="textInput" placeholder="Type or paste text here…" class="w-full h-36 p-4 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+      <div class="col-md-6">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="mb-3">
+              <textarea id="textInput" class="form-control" rows="6" placeholder="Type or paste text here…"></textarea>
+            </div>
+            <div id="fileDropZone" class="border border-primary border-dashed rounded px-4 py-5 text-center text-muted bg-white mb-2" style="cursor: pointer;">
+              📂 Drag & drop a file here or click to browse
+            </div>
+            <input type="file" id="fileInput" class="d-none" />
 
-          <div id="fileDropZone" class="w-full p-6 text-center border-2 border-dashed border-blue-300 bg-blue-50 rounded-lg cursor-pointer hover:bg-blue-100 transition">
-            📂 Drag & drop a file here or click to browse
-          </div>
-          <input type="file" id="fileInput" class="hidden" />
-
-          <div id="fileName" class="hidden w-full p-3 rounded-md bg-gray-100 border border-gray-300 text-sm font-medium text-gray-600 break-all"></div>
+            <div id="fileName" class="d-none mt-2 p-2 bg-light border rounded small text-break text-secondary d-flex justify-content-between align-items-center">
+              <span id="fileNameText" class="flex-grow-1 text-truncate"></span>
+              <button id="clearFileBtn" type="button" class="btn btn-sm btn-outline-danger ms-2">✘</button>
+            </div>
+              <button id="resetBtn" class="btn btn-outline-danger btn-sm mt-3 w-100">🔄 Reset</button>
+            </div>
         </div>
-      </section>
+      </div>
 
       <!-- Right Panel -->
-      <section class="flex-1 space-y-4">
-        <div class="bg-white p-6 rounded-xl shadow space-y-4">
-          <div class="flex justify-between items-center">
-            <h2 id="outputLabel" class="text-lg font-semibold">🔒 Hash Output</h2>
-            <select id="algorithm" class="p-2 border rounded-md text-sm">
-              <option value="SHA-256">SHA-256</option>
-              <option value="SHA-1">SHA-1</option>
-              <option value="MD5">MD5</option>
-            </select>
+      <div class="col-md-6">
+        <div class="card shadow-sm mb-4">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 id="outputLabel" class="mb-0">🔒 Hash Output</h5>
+              <select id="algorithm" class="form-select form-select-sm w-auto">
+                <option value="SHA-256">SHA-256</option>
+                <option value="SHA-1">SHA-1</option>
+                <option value="MD5">MD5</option>
+              </select>
+            </div>
+            <div id="hashOutput" class="form-control font-monospace bg-light border mb-2 text-break small">—</div>
+            <button id="copyButton" class="btn btn-primary w-100">📋 Copy Hash</button>
           </div>
-          <div id="hashOutput" class="p-4 bg-gray-50 border rounded-md font-mono text-sm break-all">—</div>
-          <button id="copyButton" class="w-full md:w-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">📋 Copy Hash</button>
         </div>
 
-        <div class="bg-white p-6 rounded-xl shadow space-y-4">
-          <h2 class="text-lg font-semibold">🔍 Compare a Hash</h2>
-          <input id="compareInput" class="w-full p-3 border rounded-md font-mono text-sm" placeholder="Paste a hash to compare…" />
-          <div id="compareResult" class="text-base font-medium">—</div>
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="mb-3">🔍 Compare a Hash</h5>
+            <input id="compareInput" class="form-control font-monospace text-break" placeholder="Paste a hash to compare…" />
+            <div id="compareResult" class="mt-3 fw-semibold small text-danger">—</div>
+          </div>
         </div>
-      </section>
+      </div>
     </div>
   </main>
 
   <!-- Footer -->
-  <footer class="text-center mt-12 text-sm text-gray-500 space-y-1 pb-8">
-    <p>100% Client-side — Files and data never leave your browser.</p>
-    <p class="text-sm">
-      &copy; <span id="year"></span>, Built with <span class="text-red-500">♥</span> in NYC by 
-      <a href="https://avijitroy.com" target="_blank" class="underline hover:text-blue-600">Avijit Roy</a>. 
+  <footer class="text-center text-muted small py-4">
+    <p class="mb-0">No internet needed. Files and data never leave your browser.</p>
+    <p class="mb-0">
+      &copy; <span id="year"></span>, Built with <span class="text-danger">♥</span> in NYC by 
+      <a href="https://avijitroy.com" target="_blank" class="text-decoration-none text-primary">Avijit Roy</a>. 
       Crafted in idle time 🌀
     </p>
   </footer>
@@ -88,6 +97,7 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
-  <script src="scripts/script.js"></script>
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="js/script.js"></script>
 </body>
 </html>

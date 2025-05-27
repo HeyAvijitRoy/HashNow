@@ -63,7 +63,7 @@ async function updateHash() {
     hashOutput.textContent = "—";
     compareResult.textContent = "—";
     compareResult.style.color = "";
-    fileNameDisplay.classList.add("hidden");
+    fileNameDisplay.classList.add("d-none");
     outputLabel.textContent = `🔒 Hash Output (${algorithm})`;
     return;
   }
@@ -71,7 +71,7 @@ async function updateHash() {
   // If text input is present, prioritize it over file
   if (text) {
     currentFile = null;
-    fileNameDisplay.classList.add("hidden");
+    fileNameDisplay.classList.add("d-none");
     const hash = await computeHash(text, algorithm);
     showHash(hash);
     return;
@@ -80,8 +80,8 @@ async function updateHash() {
   // Otherwise, process file
   if (file) {
     currentFile = file;
-    fileNameDisplay.textContent = `📄 ${file.name}`;
-    fileNameDisplay.classList.remove("hidden");
+    fileNameText.textContent = `📄 File: ${file.name}`;
+    fileNameDisplay.classList.remove("d-none");
     const buffer = await file.arrayBuffer();
     const hash = await computeHash(buffer, algorithm);
     showHash(hash);
@@ -109,12 +109,13 @@ function compareHash() {
   }
 }
 
-
 // Events
 algorithmSelect.addEventListener('change', updateHash);
 textInput.addEventListener('input', () => {
   currentFile = null;
-  fileNameDisplay.textContent = "";
+  fileInput.value = "";
+  fileNameText.textContent = "";
+  fileNameDisplay.classList.add("d-none");
   updateHash();
 });
 compareInput.addEventListener('input', compareHash);
@@ -144,7 +145,8 @@ fileDropZone.addEventListener('drop', (e) => {
   const files = e.dataTransfer.files;
   if (files.length > 0) {
     currentFile = files[0];
-    fileNameDisplay.textContent = `📄 File: ${currentFile.name}`;
+    fileNameText.textContent = `📄 File: ${currentFile.name}`;
+    fileNameDisplay.classList.remove('d-none');
     textInput.value = "";
     updateHash();
   }
@@ -153,8 +155,28 @@ fileDropZone.addEventListener('drop', (e) => {
 fileInput.addEventListener('change', () => {
   if (fileInput.files.length > 0) {
     currentFile = fileInput.files[0];
-    fileNameDisplay.textContent = `📄 File: ${currentFile.name}`;
+    fileNameText.textContent = `📄 File: ${currentFile.name}`;
     textInput.value = "";
     updateHash();
   }
+});
+
+document.getElementById('clearFileBtn').addEventListener('click', () => {
+  currentFile = null;
+  fileInput.value = '';
+  fileNameDisplay.classList.add('d-none');
+  updateHash();
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  textInput.value = '';
+  fileInput.value = '';
+  compareInput.value = '';
+  currentFile = null;
+  fileNameDisplay.classList.add('d-none');
+  currentHash = '';
+  hashOutput.textContent = '—';
+  compareResult.textContent = '—';
+  compareResult.style.color = '';
+  outputLabel.textContent = `🔒 Hash Output (${algorithmSelect.value})`;
 });
