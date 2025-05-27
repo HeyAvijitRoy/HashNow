@@ -1,0 +1,38 @@
+{
+  "name": "hashnow-desktop",
+  "version": "1.0.0",
+  "main": "main.js",
+  "description": "Offline desktop hash generator and verifier",
+  "author": "Avijit Roy",
+  "devDependencies": {
+    "electron": "^29.0.0",
+    "electron-builder": "^26.0.12"
+  },
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.hashnow.desktop",
+    "productName": "HashNow",
+    "files": [
+      "**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "icons/hashnow.ico",
+      "forceCodeSigning": false
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    },
+    "publish": null,
+    "afterSign": null
+  }
+}
