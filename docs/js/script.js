@@ -20,6 +20,7 @@ function bufferToHex(buffer) {
     .join('');
 }
 
+// Hash Compute
 async function computeHash(data, algorithm) {
   if (algorithm === "MD5") {
     if (typeof data === 'string') {
@@ -35,14 +36,24 @@ async function computeHash(data, algorithm) {
   return bufferToHex(hashBuffer);
 }
 
-
+// Toast - Popup and display
 function showToast(message) {
+  const toast = document.getElementById("toast");
+  if (!toast) return;
+
   toast.textContent = message;
   toast.classList.remove("opacity-0");
   toast.classList.add("opacity-100");
-  setTimeout(() => toast.classList.add("opacity-0"), 2000);
+
+  setTimeout(() => {
+    toast.classList.remove("opacity-100");
+    toast.classList.add("opacity-0");
+  }, 2000);
 }
 
+
+
+// Display Hash
 function showHash(hash) {
   currentHash = hash;
   const algoName = algorithmSelect.value;
@@ -51,17 +62,26 @@ function showHash(hash) {
   compareHash();
 }
 
+// Display Live Elapsed Time
+function startLiveTimer(liveTimerEl) {
+  const start = performance.now();
+  const interval = setInterval(() => {
+    const elapsed = (performance.now() - start) / 1000;
+    liveTimerEl.textContent = `Elapsed: ${elapsed.toFixed(1)}s`;
+  }, 100);
+  return { start, interval };
+}
+
 // Update Hash
 async function updateHash() {
   const algorithm = algorithmSelect.value;
-  const text = textInput.value.trim();
+  const text = textInput.value;
   const file = fileInput.files[0] || currentFile;
   const elapsedEl = document.getElementById('elapsedTime');
   const overlay = document.getElementById('processingOverlay');
   const liveTimer = document.getElementById('liveTimer');
 
-  overlay.style.display = 'none'; 
-
+  overlay.style.display = 'none';
   // If nothing to hash
   if (!text && !file) {
     currentHash = '';
@@ -74,29 +94,25 @@ async function updateHash() {
     return;
   }
 
-  let timerInterval;
-  const start = performance.now();
   liveTimer.textContent = "Elapsed: 0.0s";
   elapsedEl.textContent = "Time Elapsed: —";
 
-  // show overlay only if it's a large file
+  const { start, interval: timerInterval } = startLiveTimer(liveTimer);
+
+  // Show time overlay if file is more than 5mb
   if (file && file.size > 5 * 1024 * 1024) {
     overlay.style.display = 'flex';
   } else {
     overlay.style.display = 'none';
   }
 
-  timerInterval = setInterval(() => {
-    const elapsed = (performance.now() - start) / 1000;
-    liveTimer.textContent = `Elapsed: ${elapsed.toFixed(1)}s`;
-  }, 100);
-
   try {
     if (text) {
       currentFile = null;
       fileNameDisplay.classList.add("d-none");
       const hash = await computeHash(text, algorithm);
-      hideOverlay();
+      clearInterval(timerInterval);
+      overlay.style.display = 'none';
       showHash(hash);
       const end = performance.now();
       elapsedEl.textContent = `Time Elapsed: ${Math.round(end - start)} ms`;
@@ -137,7 +153,7 @@ function compareHash() {
   if (input === output) {
     compareResult.textContent = "✅ Hashes Match!";
     compareResult.style.color = "green";
-    showToast("✅ Hashes match!");
+    // showToast("✅ Hashes match!"); // Popup toast notification
   } else {
     compareResult.textContent = "❌ Hashes Do Not Match";
     compareResult.style.color = "red";
@@ -149,10 +165,13 @@ algorithmSelect.addEventListener('change', updateHash);
 textInput.addEventListener('input', () => {
   currentFile = null;
   fileInput.value = "";
-  fileNameText.textContent = "";
+  if (document.getElementById('fileNameText')) {
+    fileNameText.textContent = "";
+  }
   fileNameDisplay.classList.add("d-none");
   updateHash();
 });
+
 compareInput.addEventListener('input', compareHash);
 
 copyButton.addEventListener('click', () => {
@@ -215,36 +234,18 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   hashOutput.textContent = '—';
   compareResult.textContent = '—';
   compareResult.style.color = '';
-  elapsedTime.textContent = 'Time Elapsed: —';
+  document.getElementById('elapsedTime').textContent = 'Time Elapsed: —';
   outputLabel.textContent = `🔒 Hash Output (${algorithmSelect.value})`;
 });
 
 // Elapsed Time Calculation
 let timerInterval;
 
-function startTimer() {
-  const start = performance.now();
-  const timerEl = document.getElementById("liveTimer");
-
-  timerInterval = setInterval(() => {
-    const elapsed = (performance.now() - start) / 1000;
-    timerEl.textContent = `Elapsed: ${elapsed.toFixed(1)}s`;
-  }, 100);
-  return start;
-}
-
-function stopTimer(startTime) {
-  clearInterval(timerInterval);
-  const elapsed = performance.now() - startTime;
-  document.getElementById("elapsedTime").textContent = `Time Elapsed: ${Math.round(elapsed)} ms`;
-  return elapsed;
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("processingOverlay").style.display = "none";
 });
 
 function hideOverlay() {
-  overlay.style.display = 'none';
   clearInterval(timerInterval);
+  overlay.style.display = 'none';
 }

@@ -108,6 +108,17 @@ footer {
   transition: opacity 0.3s ease;
 }
 
+#toast {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateY(20px);
+  z-index: 2000;
+}
+
+#toast.opacity-100 {
+  opacity: 1 !important;
+  transform: translateY(0);
+}
+
 @media (max-width: 600px) {
   .controls {
     flex-direction: column;
