@@ -1,6 +1,6 @@
 # 🔐 HashNow – Client-Side Hash Generator & Verifier
 
-[![GitHub Pages](https://img.shields.io/badge/demo-GitHub%20Pages-blue)](https://arkabyo.github.io/HashNow/)
+[![GitHub Pages](https://img.shields.io/badge/demo-GitHub%20Pages-blue)](https://HeyAvijitRoy.github.io/HashNow/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)  
 [![Desktop Release](https://img.shields.io/badge/release-v1.0.0-green)](https://github.com/arkabyo/HashNow/releases/tag/v1.0.0)
 
